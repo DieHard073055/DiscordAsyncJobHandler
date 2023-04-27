@@ -6,7 +6,7 @@ This project implements an AI-powered Discord bot capable of generating images a
 
 Here's a demonstration of the bot in action:
 
-![Bot demonstration](./assets/bot_demostration.mp4)
+![Bot demonstration](./assets/bot_demostration.gif)
 
 ## How it works
 
