@@ -2,6 +2,12 @@
 
 This project implements an AI-powered Discord bot capable of generating images and text based on user input. It utilizes a job queue system to manage and process image and text generation requests asynchronously. The bot is built using the Discord.py library and communicates with separate AI models for image and text generation.
 
+## Demo
+
+Here's a demonstration of the bot in action:
+
+![Bot demonstration](./assets/bot_demostration.mp4)
+
 ## How it works
 
 1. The main entry point of the application is `main.py`. This file initializes the custom Discord client, sets up logging, and starts the job queue thread.
