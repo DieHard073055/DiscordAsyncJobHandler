@@ -30,7 +30,7 @@ def create_command_with(job_queue):
     @app_commands.describe(width="Image width in px. [Default: 512]")
     @app_commands.describe(height="Image height in px. [Default: 512]")
     @app_commands.describe(
-        seed="A set of random seed is used by the AI to generate the image. A fixed seed will result in the same output, given the same input parameters. Different seed will produce a different output."
+        seed="A random seed is used by the AI to generate the image. A fixed seed will result in the same output, given the same input parameters. Different seed will produce a different output."
     )
     async def img(
         interaction: discord.Interaction,
