@@ -1,35 +1,36 @@
 import json
 import random
+import logging
 from typing import Optional
 
 import discord
 from discord import app_commands
 
 from config import (DEFAULT_CFG_SCALE, DEFAULT_HEIGHT, DEFAULT_NEGATIVE_PROMPT,
-                    DEFAULT_SAMPLER, DEFAULT_STEPS, DEFAULT_WIDTH)
+                    DEFAULT_SAMPLER, DEFAULT_STEPS, DEFAULT_WIDTH, NEGATIVE_PROMPT_PRESET_1)
 from job_handler import JOB_IMG
 
 
 def create_command_with(job_queue):
-    @app_commands.describe(
-        prompt="This is the input prompt provided to the AI model to guide the image generation process. The prompt is a text description that the AI will use to create the image."
-    )
-    @app_commands.describe(
-        negative_prompt="This parameter is used to provide a prompt that the AI model should avoid generating. It can be helpful for refining the output or ensuring that the generated image does not contain certain elements."
-    )
     # @app_commands.describe(
     #     sampler_name="This parameter specifies the name of the sampler used by the AI model for generating the image."
     # )
     @app_commands.describe(
-        steps="This parameter controls the number of optimization steps the AI model should take to generate the image. A higher number of steps might result in more detailed and refined output, but it may also take longer to generate"
+        prompt="Enter your prompt or a description of your image."
     )
     @app_commands.describe(
-        cfg_scale="This parameter controls the scale of the AI model's configuration. It can affect the quality and size of the generated image."
+        negative_prompt="Set a negative prompt as a method to 'avoid' critierias. Example: mutated hands"
     )
-    @app_commands.describe(width="Width of the generated image")
-    @app_commands.describe(height="Height of the generated image")
     @app_commands.describe(
-        seed="This parameter sets the random seed used by the AI model for generating the image. A fixed seed will result in the same output every time the program is run with the same input parameters, while a different seed will produce a different output."
+        steps="[Default: 20] Set the number of steps of image optimization. The higher the number, the longer the processing time, but the more detailed and refined is the output."
+    )
+    @app_commands.describe(
+        cfg_scale="[Default: 8] Set the scale of the AI model's configuration. It affects the quality and size of the generated image."
+    )
+    @app_commands.describe(width="Image width in px. [Default: 512]")
+    @app_commands.describe(height="Image height in px. [Default: 512]")
+    @app_commands.describe(
+        seed="A random seed is used by the AI to generate the image. A fixed seed will result in the same output, given the same input parameters. Different seed will produce a different output."
     )
     async def img(
         interaction: discord.Interaction,
@@ -43,7 +44,6 @@ def create_command_with(job_queue):
         seed: Optional[int] = None,
     ):
         await interaction.response.defer()
-        await interaction.followup.send("parameters for your request: ")
         input_data = {
             "prompt": prompt,
             "negative_prompt": negative_prompt or DEFAULT_NEGATIVE_PROMPT,
@@ -54,13 +54,10 @@ def create_command_with(job_queue):
             "height": str(height or DEFAULT_HEIGHT),
             "seed": str(seed or random.randint(1, 10000000)),
         }
-        await interaction.followup.send(
-            f"```{json.dumps(input_data, indent=4, default=str)}```"
-        )
-        await interaction.followup.send("please wait while we process your request")
+
+        await interaction.followup.send("🚧 Generating...")
 
         await job_queue.add_job(
             JOB_IMG, interaction.channel_id, interaction.user, input_data
         )
-
     return img
