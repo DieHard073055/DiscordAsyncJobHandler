@@ -1,5 +1,6 @@
 import json
 import random
+import logging
 from typing import Optional
 
 import discord
@@ -27,7 +28,7 @@ def create_command_with(job_queue):
         cfg_scale="[Default: 8] Set the scale of the AI model's configuration. It affects the quality and size of the generated image."
     )
     @app_commands.describe(width="Image width in px. [Default: 512]")
-    @app_commands.describe(height="Image height in px. [Default: 768]")
+    @app_commands.describe(height="Image height in px. [Default: 512]")
     @app_commands.describe(
         seed="A set of random seed is used by the AI to generate the image. A fixed seed will result in the same output, given the same input parameters. Different seed will produce a different output."
     )
@@ -53,13 +54,10 @@ def create_command_with(job_queue):
             "height": str(height or DEFAULT_HEIGHT),
             "seed": str(seed or random.randint(1, 10000000)),
         }
-        await interaction.followup.send(
-            f"```{json.dumps(input_data, indent=4, default=str)}```"
-        )
-        await interaction.followup.send("Generating...")
+
+        await interaction.followup.send("🚧 Generating...")
 
         await job_queue.add_job(
             JOB_IMG, interaction.channel_id, interaction.user, input_data
         )
-
     return img
