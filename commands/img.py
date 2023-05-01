@@ -60,7 +60,7 @@ def create_command_with(job_queue):
         await interaction.followup.send("please wait while we process your request")
 
         await job_queue.add_job(
-            JOB_IMG, interaction.channel_id, interaction.user.name, input_data
+            JOB_IMG, interaction.channel_id, interaction.user, input_data
         )
 
     return img

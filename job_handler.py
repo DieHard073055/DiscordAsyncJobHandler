@@ -77,7 +77,7 @@ async def job_txt(client, input, channel_id, user):
     coro = client.get_channel(channel_id).send(f"{user.mention} : {result}")
     future = asyncio.run_coroutine_threadsafe(coro, client.loop)
     future.result()
-    logging.info(f"sending response to @{user}")
+    logging.info(f"sending response to {user}")
 
 
 async def job_img(client, input, channel_id, user):
@@ -104,8 +104,8 @@ async def job_img(client, input, channel_id, user):
                 logging.error(response.text)
 
     coro = client.get_channel(channel_id).send(
-        f"@{user} Here's your image!", file=discord.File("output.png")
+        f"{user.mention} Here's your image!", file=discord.File("output.png")
     )
     future = asyncio.run_coroutine_threadsafe(coro, client.loop)
     future.result()
-    logging.info(f"sending response to @{user}")
+    logging.info(f"sending response to {user}")
