@@ -30,7 +30,6 @@ def create_command_with(job_queue):
         await interaction.followup.send(f"```{json.dumps(input_data, indent=4, default=str)}```")
         await interaction.followup.send("please wait while we process your request")
 
-        await job_queue.add_job(JOB_TXT, interaction.channel_id, interaction.user.name, input_data)
+        await job_queue.add_job(JOB_TXT, interaction.channel_id, interaction.user, input_data)
 
     return txt
-
