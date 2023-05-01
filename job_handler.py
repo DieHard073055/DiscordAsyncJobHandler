@@ -18,16 +18,15 @@ class JobQueue:
     async def add_job(
         self, job_type: str, channel_id: int, user: str, input: dict[str, str]
     ) -> None:
-        logging.info("Adding a job to the queue")
+        logging.info("Added job to queue")
         self.jobs.put((job_type, input, channel_id, user))
 
     async def run_jobs(self, client: discord.Client, job_function) -> None:
         while True:
             try:
                 job_type, input, channel, user = self.jobs.get(block=False)
-                logging.info(
-                    f"Job [{job_type}] found, executing..."
-                )  # Add this line to see if a job is being executed
+                # Add the following line to see if a job is being executed
+                logging.info(f"Job [{job_type}] found, executing...")
             except queue.Empty:
                 await asyncio.sleep(1)
                 continue
@@ -47,22 +46,20 @@ async def job_selector(job_type, client, input, channel_id, user):
         JOB_IMG: job_img,
         JOB_TXT: job_txt,
     }
-    logging.info(
-        "Executing job selector..."
-    )  # Add this line to see if the function is being executed
+    # Add the following line to see if the function is being executed
+    logging.info("Executing job selector...")
     await job_type_map[job_type](client, input, channel_id, user)
-    logging.info(f"done executing job")
+    logging.info("Job execution - done!")
 
 
 # TODO: find a model that can handle text
 async def job_txt(client, input, channel_id, user):
-    logging.info(
-        "Executing txt job function..."
-    )  # Add this line to see if the function is being executed
+    # Add the following line to see if the function is being executed
+    logging.info("Executing /txt job function...")
     url = "http://192.168.1.123:5001/predictions"
     headers = {"Content-Type": "application/json"}
     data = {"input": input}
-    result = "lol text model is down right now. ;D"
+    result = "lol text model is down right now. :P"
 
     # async with aiohttp.ClientSession() as session:
     #     async with session.post(
@@ -77,13 +74,13 @@ async def job_txt(client, input, channel_id, user):
     coro = client.get_channel(channel_id).send(f"{user.mention} : {result}")
     future = asyncio.run_coroutine_threadsafe(coro, client.loop)
     future.result()
-    logging.info(f"sending response to {user}")
+    logging.info(f"Sent response to {user}.")
 
 
 async def job_img(client, input, channel_id, user):
-    logging.info(
-        "Executing img job function..."
-    )  # Add this line to see if the function is being executed
+    # Add the following line to see if the function is being executed
+    logging.info("Executing /img job function...")
+
     url = "http://192.168.1.123:5000/predictions"
     headers = {"Content-Type": "application/json"}
     data = {"input": input}
@@ -100,12 +97,12 @@ async def job_img(client, input, channel_id, user):
                     f.write(png_data)
             else:
                 logging.error(
-                    f"Request failed with status code {response.status}")
+                    f"Request failed. [Status code: {response.status}]")
                 logging.error(response.text)
 
     coro = client.get_channel(channel_id).send(
-        f"{user.mention} Here's your image!", file=discord.File("output.png")
+        f"**{input['prompt']}** - {user.mention}", file=discord.File("output.png")
     )
     future = asyncio.run_coroutine_threadsafe(coro, client.loop)
     future.result()
-    logging.info(f"sending response to {user}")
+    logging.info(f"Response sent to {user}")
